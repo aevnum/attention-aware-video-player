@@ -1,6 +1,8 @@
 # Attention-Aware Video Player
 
-An attention-aware video player that detects when a user is looking at the screen or not. It uses a machine learning model to send a binary output indicating whether to play (1) or pause (0) a video, based on real-time webcam input.
+An attention aware video playback extension that will pause the video when you're not looking at it! Great for users that use subtitles and hate it when they look away and have to end up rewinding because they missed a part :(
+
+It uses a machine learning model to send a binary output indicating whether to play (1) or pause (0) a video, based on real-time webcam input.
 
 ## Features
 - **Calibration**: Collect labeled data for "looking at screen" and "not looking at screen" to fine-tune the model.
