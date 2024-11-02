@@ -60,18 +60,16 @@ async def send_attention_updates(websocket, path):
             thresholds = json.load(open('attention_thresholds.json'))
             directions = get_directions(ratios, thresholds)
 
-            # Update attention state every second
+            # Check if the attention needs to be updated every second
             if time.time() - attention_start_time >= attention_threshold:
-                new_attention = get_attention(directions)  # Get the latest attention state
-                attention_history.append(new_attention)  # Add to history
+                temp_attention = get_attention(directions)  # Get the latest attention state
+                attention_history.append(temp_attention)  # Add to history
 
                 # Check if the entire deque is True or False
                 if all(attention_history):
-                    print("All attention states are True")
+                    new_attention = True
                 elif not any(attention_history):
-                    print("All attention states are False")
-
-                # Check if attention state has changed
+                    new_attention = False
                 if new_attention != attention:
                     attention = new_attention
                     # Send updated attention state to WebSocket
