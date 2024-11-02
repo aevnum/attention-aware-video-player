@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Attention Control",
+  "version": "1.0",
+  "description": "Pauses and plays YouTube videos based on user's attention.",
+  "permissions": [
+      "activeTab",
+      "scripting",
+      "webRequest",
+      "webRequestBlocking",
+      "storage"
+  ],
+  "background": {
+      "service_worker": "background.js"
+  },
+  "content_scripts": [
+      {
+          "matches": ["*://*.youtube.com/*"],
+          "js": ["content.js"]
+      }
+  ],
+  "web_accessible_resources": [
+      {
+          "resources": ["content.js"],
+          "matches": ["*://*.youtube.com/*"]
+      }
+  ]
+}
+
+  
