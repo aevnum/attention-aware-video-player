@@ -34,6 +34,7 @@ async def send_attention_updates(websocket, path):
     # Initialize variables
     attention_start_time = time.time()
     attention = False  # Track attention state to send only when it changes
+    new_attention = False
 
     # Setup OpenCV and MediaPipe
     cap = cv2.VideoCapture(0)
@@ -88,8 +89,6 @@ async def send_attention_updates(websocket, path):
                 await websocket.send("pause")
                 attention = False
                 print("No face detected! Sent: pause")  # Debug message
-
-        cv2.imshow("Frame", frame)
 
     # Release resources
     cap.release()
