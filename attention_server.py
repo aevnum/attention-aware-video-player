@@ -7,7 +7,7 @@ import websockets
 from helpers import *
 from collections import deque
 
-attention_history = deque(maxlen=10)  # Keep track of last 10 attention states
+attention_history = deque(maxlen=5)  # Keep track of last 10 attention states
 
 async def send_attention_updates(websocket, path):
 
