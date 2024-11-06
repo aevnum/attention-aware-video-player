@@ -40,21 +40,20 @@ pip install opencv-python mediapipe websockets
 
 1. Clone the repository and navigate to the project directory.
 2. Install the required packages listed above.
-3. Add the extension.crx to your chromium based browser of choice. (Double click and open with your browser, then click install.)
-
-## Usage
-
-Start the program with GUI by using the command:
+3. Go to your chromium based browser of choice.
+4. Turn on developer mode on top right.
+5. Click "Load Unpacked" and choose the extension folder.
+6. Start the program with GUI by using the command:
 
 ```bash
 python attention_detection.py
 ```
 
-4. Then click the "Calibrate Thresholds" button and follow on screen instructions to generate your thresholds. To achieve the best sensitivity I recommend looking right outside the edges of your screen. If you look too far out the the video might not pause when you look away (Sensitivity too low), if you look near the edges of your screen the video might frequently pause (Sensitivity too high).
-5. Then click "Start server" to open the websocket server.
-6. Open the browser and video. If the video was already open, just close and open the browser to reactivate connection.
-7. Now the program is running!
-8. When you want to stop, click Stop server, and once it tells you to close window, close the window.
+7. Then click the "Calibrate Thresholds" button and follow on screen instructions to generate your thresholds. To achieve the best sensitivity I recommend looking right outside the edges of your screen. If you look too far out the the video might not pause when you look away (Sensitivity too low), if you look near the edges of your screen the video might frequently pause (Sensitivity too high).
+8. Then click "Start server" to open the websocket server.
+9. Open the browser and video. If the video was already open, just close and open the browser to reactivate connection.
+10. Now the program is running!
+11. When you want to stop, click Stop server, and once it tells you to close window, close the window.
 
 ### WebSocket Server Address
 - Default server address: `localhost`
