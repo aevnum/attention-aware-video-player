@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Attention Control",
+  "name": "Attention Aware Video Playback",
   "version": "1.0",
   "description": "Pauses and plays YouTube videos based on user's attention.",
   "permissions": [
