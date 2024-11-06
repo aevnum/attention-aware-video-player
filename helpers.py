@@ -76,3 +76,10 @@ def get_attention(directions):
     else:
         attention = False
     return attention
+
+def check_attention_state(attention_history):
+    # Check if the entire deque is True or False
+    if all(attention_history):
+        return True
+    elif not any(attention_history):
+        return False
