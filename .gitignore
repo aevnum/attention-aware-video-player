@@ -18,3 +18,5 @@ data/
 
 # Windows specific
 Thumbs.db
+
+attention_thresholds.json
