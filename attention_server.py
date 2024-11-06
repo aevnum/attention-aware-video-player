@@ -13,6 +13,8 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 import socket
 
+####### GLOBAL PARAMETERS ######################################################################################################################################################
+
 attention_history = deque(maxlen=5)  # Keep track of last 10 attention states
 
 landmark_indices = {
@@ -31,13 +33,7 @@ landmark_indices = {
     "FOREHEAD": 10
 }
 
-def check_attention_state(attention_history):
-    # Check if the entire deque is True or False
-    if all(attention_history):
-        return True
-    elif not any(attention_history):
-        return False
-    return None  # Return None if no clear consensus
+#########################################################################################################################################################################
 
 async def send_attention_updates(websocket, path):
 
@@ -122,6 +118,10 @@ async def send_attention_updates(websocket, path):
     # Release resources
     cap.release()
     cv2.destroyAllWindows()
+
+###########################################################################################################################################################################
+
+######### CALIBRATION FUNCTION ############################################################################################################################################
 
 def calibrate_thresholds(landmark_indices: Dict[str, int]) -> Dict[str, float]:
     """
@@ -275,6 +275,9 @@ def calibrate_thresholds(landmark_indices: Dict[str, int]) -> Dict[str, float]:
     print("\nCalibration complete! Thresholds saved to 'attention_thresholds.json'")
     return thresholds
 
+#########################################################################################################################################################################
+
+####### GUI LOGIC #######################################################################################################################################################
 
 class AttentionServerGUI:
     def __init__(self):
@@ -376,15 +379,6 @@ class AttentionServerGUI:
         
     def start_server(self):
         if not self.is_running:
-            # Check cooldown period (30 seconds)
-            if time.time() - self.last_shutdown_time < 30:
-                remaining = int(30 - (time.time() - self.last_shutdown_time))
-                self.status_label.config(text=f"Please wait {remaining}s before restart")
-                return
-                
-            if not self.check_port_available():
-                self.status_label.config(text="Port 6789 is in use")
-                return
                 
             self.shutdown_event.clear()
             self.server_thread = threading.Thread(target=self.run_server)
@@ -435,11 +429,15 @@ class AttentionServerGUI:
     def update_buttons(self, running: bool):
         """Update button states based on server status"""
         self.is_running = running
-        self.start_button.config(state=tk.DISABLED if running else tk.NORMAL)
-        self.stop_button.config(state=tk.NORMAL if running else tk.DISABLED)
-        self.calibrate_button.config(state=tk.DISABLED if running else tk.NORMAL)
         if running:
+            self.start_button.config(state=tk.DISABLED)
+            self.stop_button.config(state=tk.NORMAL)
+            self.calibrate_button.config(state=tk.DISABLED)
             self.status_label.config(text="Server Status: Running")
+        else:
+            self.start_button.config(state=tk.DISABLED)
+            self.stop_button.config(state=tk.DISABLED)
+            self.calibrate_button.config(state=tk.DISABLED)
 
     def run(self):
         """Start the GUI main loop"""
