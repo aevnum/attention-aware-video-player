@@ -20,15 +20,29 @@ function connectWebSocket() {
         }, 10000);
     };
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
         if (event.data === "pause" || event.data === "play") {
             console.log("Received message:", event.data);
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-                // Send a message to the content script to control the video
-                if (tabs.length > 0) {
-                    chrome.tabs.sendMessage(tabs[0].id, { action: "controlVideo", data: event.data });
+            try {
+                // Send message to content script and wait for response
+                const result = await chrome.tabs.query({ active: true, currentWindow: true })
+                    .then(tabs => {
+                        if (tabs.length > 0) {
+                            return chrome.tabs.sendMessage(tabs[0].id, {
+                                action: "controlVideo",
+                                data: event.data
+                            });
+                        }
+                        throw new Error("No active tab found");
+                    });
+                
+                if (result && result.status === "success") {
+                    // Send acknowledgment back to server
+                    socket.send(`ack_${event.data}`);
                 }
-            });
+            } catch (error) {
+                console.error("Error controlling video:", error);
+            }
         }
     };
 

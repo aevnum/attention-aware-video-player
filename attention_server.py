@@ -54,6 +54,21 @@ async def send_attention_updates(websocket, path):
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.8)
 
+    async def send_message_with_retry(message, max_retries=3):
+        for _ in range(max_retries):
+            try:
+                await websocket.send(message)
+                print(f"Sent: {message}")
+                # Wait for acknowledgment
+                ack = await asyncio.wait_for(websocket.recv(), timeout=1.0)
+                if ack == f"ack_{message}":
+                    print(f"Received acknowledgment for {message}")
+                    return True
+            except Exception as e:
+                print(f"Error sending {message}: {e}")
+                await asyncio.sleep(0.1)
+        return False
+
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
@@ -83,9 +98,10 @@ async def send_attention_updates(websocket, path):
                 if new_attention is not None and new_attention != attention:
                     attention = new_attention
                     message = "play" if attention else "pause"
-                    await asyncio.sleep(0.000001)
-                    await websocket.send(message)
-                    print(f"Sent: {message}")
+                    if await send_message_with_retry(message):
+                        print(f"Successfully sent and acknowledged: {message}")
+                    else:
+                        print(f"Failed to send or get acknowledgment for: {message}")
                 attention_start_time = time.time()
 
         else:
@@ -97,9 +113,10 @@ async def send_attention_updates(websocket, path):
                 if new_attention is not None and new_attention != attention:
                     attention = new_attention
                     message = "play" if attention else "pause"
-                    await asyncio.sleep(0.000001)
-                    await websocket.send(message)
-                    print(f"Sent: {message}")
+                    if await send_message_with_retry(message):
+                        print(f"Successfully sent and acknowledged: {message}")
+                    else:
+                        print(f"Failed to send or get acknowledgment for: {message}")
                 attention_start_time = time.time()
 
     # Release resources
