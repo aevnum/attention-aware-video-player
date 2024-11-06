@@ -1,8 +1,21 @@
 {
   "manifest_version": 3,
   "name": "Attention Aware Video Playback",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Pauses and plays YouTube videos based on user's attention.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    },
+    "default_title": "Attention Aware Video Playback"
+  },
   "permissions": [
       "activeTab",
       "scripting",
