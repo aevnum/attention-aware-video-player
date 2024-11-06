@@ -8,6 +8,10 @@ from helpers import *
 from collections import deque
 import numpy as np
 from typing import Dict
+import tkinter as tk
+import threading
+from concurrent.futures import ThreadPoolExecutor
+import socket
 
 attention_history = deque(maxlen=5)  # Keep track of last 10 attention states
 
@@ -26,6 +30,14 @@ landmark_indices = {
     "CHIN": 152,
     "FOREHEAD": 10
 }
+
+def check_attention_state(attention_history):
+    # Check if the entire deque is True or False
+    if all(attention_history):
+        return True
+    elif not any(attention_history):
+        return False
+    return None  # Return None if no clear consensus
 
 async def send_attention_updates(websocket, path):
 
@@ -64,42 +76,35 @@ async def send_attention_updates(websocket, path):
 
             # Check if the attention needs to be updated every second
             if time.time() - attention_start_time >= attention_threshold:
-                temp_attention = get_attention(directions)  # Get the latest attention state
-                attention_history.append(temp_attention)  # Add to history
-
-                # Check if the entire deque is True or False
-                if all(attention_history):
-                    new_attention = True
-                elif not any(attention_history):
-                    new_attention = False
-                if new_attention != attention:
+                temp_attention = get_attention(directions)
+                attention_history.append(temp_attention)
+                new_attention = check_attention_state(attention_history)
+                
+                if new_attention is not None and new_attention != attention:
                     attention = new_attention
-                    # Send updated attention state to WebSocket
                     message = "play" if attention else "pause"
                     await asyncio.sleep(0.000001)
                     await websocket.send(message)
-                    print(f"Sent: {message}")  # Debug message
-                    # print("Attention state changed:", attention)
-                # Reset timer
+                    print(f"Sent: {message}")
                 attention_start_time = time.time()
 
         else:
             # No face detected; assume no attention
-            if attention:  # Only send if attention state changes to False
-                await asyncio.sleep(0.000001)
-                await websocket.send("pause")
-                attention = False
-                print("No face detected! Sent: pause")  # Debug message
+            if time.time() - attention_start_time >= attention_threshold:
+                attention_history.append(False)  # No face means no attention
+                new_attention = check_attention_state(attention_history)
+                
+                if new_attention is not None and new_attention != attention:
+                    attention = new_attention
+                    message = "play" if attention else "pause"
+                    await asyncio.sleep(0.000001)
+                    await websocket.send(message)
+                    print(f"Sent: {message}")
+                attention_start_time = time.time()
 
     # Release resources
     cap.release()
     cv2.destroyAllWindows()
-
-import tkinter as tk
-import threading
-from concurrent.futures import ThreadPoolExecutor
-import socket
-import traceback
 
 def calibrate_thresholds(landmark_indices: Dict[str, int]) -> Dict[str, float]:
     """
